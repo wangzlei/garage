@@ -98,25 +98,13 @@ jobs:
 
       - name: Pull an image from docker hub
         if: ${{ runner.os == 'Linux' }}
-        id: pull-from-dockerhub
-        run: docker pull fayewong/leitest:alpha
-
-      - name: Run daemon image
-        if: ${{ runner.os == 'Linux' }}
         run: |
+          docker pull fayewong/leitest:alpha
           docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -p 0.0.0.0:2000:2000/udp --name xray-daemon fayewong/leitest:alpha -o -n us-west-2 -b 0.0.0.0:2000 &
           sleep 30
-
-      - name: Send invalid traffic
-        if: ${{ runner.os == 'Linux' }}
-        run: |
           python3 Tool/src/integration/invalid_input.py
           sleep 10
           docker stats --no-stream
-
-      - name: Check container status
-        if: ${{ runner.os == 'Linux' }}
-        run: |
           if [[ "$(docker container inspect -f '{{.State.Status}}' xray-daemon )" != "running" ]]; then
             exit 1
           fi
