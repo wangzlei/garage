@@ -315,27 +315,27 @@ func TestPollSendReturnUnprocessed(t *testing.T) {
 	assert.True(t, strings.Contains(log.Logs[1], "Unprocessed segment"))
 }
 
-func TestPollSendReturnUnprocessedInvalid(t *testing.T) {
-	log := test.LogSetup()
-	xRay := new(MockXRayClient)
-	xRay.On("PutTraceSegments", nil).Return("Send Invalid").Once()
-	s := segmentsBatch{
-		batches: make(chan []*string, 1),
-		xRay:    xRay,
-		done:    make(chan bool),
-	}
-	testMessage := "{\"id\":\"9472\""
-	batch := []*string{&testMessage}
-	s.send(batch)
-
-	go s.poll()
-	close(s.batches)
-	<-s.done
-
-	assert.EqualValues(t, xRay.CallNoToPutTraceSegments, 1)
-	assert.True(t, strings.Contains(log.Logs[0], fmt.Sprintf("Sent batch of %v segments but had %v Unprocessed segments", 1, 1)))
-	assert.True(t, strings.Contains(log.Logs[1], "Received nil unprocessed segment id from X-Ray service"))
-}
+//func TestPollSendReturnUnprocessedInvalid(t *testing.T) {
+//	log := test.LogSetup()
+//	xRay := new(MockXRayClient)
+//	xRay.On("PutTraceSegments", nil).Return("Send Invalid").Once()
+//	s := segmentsBatch{
+//		batches: make(chan []*string, 1),
+//		xRay:    xRay,
+//		done:    make(chan bool),
+//	}
+//	testMessage := "{\"id\":\"9472\""
+//	batch := []*string{&testMessage}
+//	s.send(batch)
+//
+//	go s.poll()
+//	close(s.batches)
+//	<-s.done
+//
+//	assert.EqualValues(t, xRay.CallNoToPutTraceSegments, 1)
+//	assert.True(t, strings.Contains(log.Logs[0], fmt.Sprintf("Sent batch of %v segments but had %v Unprocessed segments", 1, 1)))
+//	assert.True(t, strings.Contains(log.Logs[1], "Received nil unprocessed segment id from X-Ray service"))
+//}
 
 type minTestCase struct {
 	x      int32
