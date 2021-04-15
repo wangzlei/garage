@@ -57,9 +57,10 @@ jobs:
           build/xray-linux-amd64/xray -o -l dev &
           sleep 10
           ps -eaf | grep xray
+          python3 Tool/src/integration/invalid_input.py
           ProcNumber=$(ps -ef |grep -w xray|grep -v grep|wc -l)
           echo $ProcNumber
-          if [ $PROCESS_NUM -eq 1 ]; then
+          if [[ $PROCESS_NUM -eq 1 ]]; then
             exit 1
           fi
 
