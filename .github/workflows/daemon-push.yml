@@ -51,6 +51,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Verify Daemon binary
+        if: ${{ runner.os == 'Linux' && github.event_name == 'push' }}
+        run: |
+          build/xray-linux-amd64/xray -l dev &
+          sleep 10
+          ps -eaf | grep xray
+          ProcNumber=$(ps -ef |grep -w xray|grep -v grep|wc -l)
+          echo $ProcNumber
+
       - name: Download package signing GPG secret key
         if: ${{ runner.os == 'Linux' && github.event_name == 'push' }}
         run: |
@@ -95,15 +104,15 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Pull an image from docker hub
-        if: ${{ runner.os == 'Linux' }}
-        run: |
-          docker pull fayewong/leitest:alpha
-          docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -p 0.0.0.0:2000:2000/udp --name xray-daemon fayewong/leitest:alpha -o -n us-west-2 -b 0.0.0.0:2000 &
-          sleep 30
-          python3 Tool/src/integration/invalid_input.py
-          sleep 10
-          docker stats --no-stream
-          if [[ "$(docker container inspect -f '{{.State.Status}}' xray-daemon )" != "running" ]]; then
-            exit 1
-          fi
+#      - name: Pull an image from docker hub
+#        if: ${{ runner.os == 'Linux' }}
+#        run: |
+#          docker pull fayewong/leitest:alpha
+#          docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -p 0.0.0.0:2000:2000/udp --name xray-daemon fayewong/leitest:alpha -o -n us-west-2 -b 0.0.0.0:2000 &
+#          sleep 30
+#          python3 Tool/src/integration/invalid_input.py
+#          sleep 10
+#          docker stats --no-stream
+#          if [[ "$(docker container inspect -f '{{.State.Status}}' xray-daemon )" != "running" ]]; then
+#            exit 1
+#          fi
