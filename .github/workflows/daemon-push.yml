@@ -54,7 +54,7 @@ jobs:
       - name: Verify Daemon binary
         if: ${{ runner.os == 'Linux' && github.event_name == 'push' }}
         run: |
-          build/xray-linux-amd64/xray -l dev &
+          build/xray-linux-amd64/xray -o -l dev &
           sleep 10
           ps -eaf | grep xray
           ProcNumber=$(ps -ef |grep -w xray|grep -v grep|wc -l)
