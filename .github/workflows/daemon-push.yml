@@ -61,9 +61,11 @@ jobs:
           sleep 10
           ProcNumber=$(ps -ef |grep -w xray|grep -v grep|wc -l)
           echo $ProcNumber
-          if [[ $PROCESS_NUM -eq 1 ]]; then
+          if [[ $PROCESS_NUM eq 0 ]]; then
+            echo "Daemon is down"
             exit 1
           fi
+          echo "Daemon is up"
 
       - name: Download package signing GPG secret key
         if: ${{ runner.os == 'Linux' && github.event_name == 'push' }}
