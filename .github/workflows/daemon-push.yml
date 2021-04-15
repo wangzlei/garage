@@ -51,13 +51,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Verify Daemon binary
+      - name: Launch Daemon binary
         if: ${{ runner.os == 'Linux' && github.event_name == 'push' }}
         run: |
           build/xray-linux-amd64/xray -o -l dev &
           sleep 10
           ps -eaf | grep xray
           python3 Tool/src/integration/invalid_input.py
+          sleep 10
           ProcNumber=$(ps -ef |grep -w xray|grep -v grep|wc -l)
           echo $ProcNumber
           if [[ $PROCESS_NUM -eq 1 ]]; then
