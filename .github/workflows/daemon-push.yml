@@ -59,7 +59,7 @@ jobs:
           echo -e '{"format":"json","version":1}\nx' | nc -w 1 -u 127.0.0.1 2000
           sleep 10
           ProcNumber=$(ps -ef |grep -w xray|grep -v grep|wc -l)
-          if [[ $ProcNumber==0 ]]; then
+          if [[ $ProcNumber == 0 ]]; then
             echo "--------"
             echo $ProcNumber
             echo "is 0"
