@@ -60,11 +60,16 @@ jobs:
           sleep 10
           ProcNumber=$(ps -ef |grep -w xray|grep -v grep|wc -l)
           if [[ $ProcNumber==0 ]]; then
+            echo "--------"
+            echo $ProcNumber
             echo "is 0"
             exit 1
           else
+            echo "======="
+            echo $ProcNumber
             echo "not 0"
           fi
+          echo "==again==="
           echo $ProcNumber
 
       - name: Download package signing GPG secret key
